@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <!-- <button onclick="go()">GOOOO!</button> -->
+    <h1 id="AccentColor" style="color: wheat">Windows AccentColor</h1>
+    <h1 id="ColorizationColor" style="color: wheat">Windows ColorizationColor</h1>
+    <h1 id="getAccentColor" style="color: wheat">systemPreferences.getAccentColor()</h1>
+
+    <script>
+      const regedit = require('regedit')
+      const ipcRenderer = require('electron').ipcRenderer
+
+      ipcRenderer.on('dom-color', (event, color) => { go(color) })
+
+      function go(color) {
+          regedit.list('HKCU\\Software\\Microsoft\\Windows\\DWM', function(err, result) {
+              result = result['HKCU\\Software\\Microsoft\\Windows\\DWM'].values
+
+              console.log('AccentColor', result.AccentColor.value, toHex(result.AccentColor.value))
+              console.log('ColorizationColor', result.ColorizationColor.value, toHex(result.ColorizationColor.value))
+          
+              document.getElementById('AccentColor').style.backgroundColor = `#${toHex(result.AccentColor.value).substring(2)}`
+              document.getElementById('ColorizationColor').style.backgroundColor = `#${toHex(result.ColorizationColor.value).substring(2)}`
+
+              document.getElementById('getAccentColor').style.backgroundColor = `#${color}`
+          })
+      }
+
+      function toHex(integer) { return (integer).toString(16) }
+
+    </script>
+  </body>
+</html>
